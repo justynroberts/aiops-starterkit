@@ -1,7 +1,7 @@
 [
     {
       "id": 1,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 1 ",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -9,7 +9,7 @@
     },
     {
       "id": 2,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 2 ",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -17,7 +17,7 @@
     },
     {
       "id": 3,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 3 ",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -25,7 +25,7 @@
     },
     {
       "id": 4,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 4 ",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -33,7 +33,7 @@
     },
     {
       "id": 5,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 5 ",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -41,7 +41,7 @@
     },
     {
       "id": 6,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 6",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -49,7 +49,7 @@
     },
     {
       "id": 7,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 7",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -57,7 +57,7 @@
     },
     {
       "id": 8,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 8",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -65,7 +65,7 @@
     },
     {
       "id": 9,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 9",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
@@ -73,7 +73,7 @@
     },
     {
       "id": 10,
-      "name": "Diagnostics - Check Environment ",
+      "name": "Diagnostics - Check Environment 10 ",
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",

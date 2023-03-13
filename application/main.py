@@ -1,4 +1,4 @@
-API_TOKEN = "1234"
+API_TOKEN = ""
 # ^^^^^^^
 # Temporary - Enter API key here for testing
 
@@ -10,16 +10,12 @@ import json
 app = Flask(__name__)
 
 # Dummy data for services
-SERVICES = [
-    {"id": 1, "name": "Service 1", "data": "Some data for Service 1"},
-]
-RUNNERS = [{"id": 1, "name": "Runner1"}]
-
-# Open external files
+SERVICES = []
+RUNNERS = []
 with open("configuration/tasks.json", "r") as f:
     TASKS = json.load(f)
-
 services_url = "https://api.pagerduty.com/services"
+automation_url = "https://api.pagerduty.com/automation_actions/actions"
 runners_url = "https://api.pagerduty.com/automation_actions/runners"
 payload = ""
 headers = {
@@ -27,7 +23,36 @@ headers = {
     "Content-Type": "application/json",
     "Authorization": "Token token=" + API_TOKEN,
 }
+# Main create AA task
+def create_action(selected_services,selected_runner,selected_tasks):
+    selected_tasks = [int(id) for id in selected_tasks]
+    processed_task = [item for item in TASKS if item['id'] in selected_tasks]
+    for item in processed_task:
+        services_json = []
+        for service in selected_services:
+            service_json = {"id": service, "type": "service_reference"}
+            services_json.append(service_json)
+  
+        aa_payload = {"action": {
+        "name": item['name'],
+        "description": item['description'],
+        "action_type": "script",
+        "runner": selected_runner[0],
+        "action_data_reference": {"script": item['script']},
+        "services": services_json
+        }}
 
+
+
+
+        json_payload = json.dumps(aa_payload)
+
+        print("DEPLOYING PAYLOAD")
+        print(json_payload)
+        print("_______________")
+        response = requests.request("POST", automation_url, json=json_payload, headers=headers)
+        print(response.text)
+    return ()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -37,15 +62,12 @@ def index():
         selected_tasks = request.form.getlist("tasks")
         selected_runners = request.form.getlist("runners")
         # Do something with the selected services and tasks
-        print("Selected services:", selected_services)
-        print("Selected tasks:", selected_tasks)
-        print("Selected runners:", selected_runners)
+        create_action(selected_services,selected_runners,selected_tasks)
         message = f"Selected services: {selected_services}\nSelected tasks: {selected_tasks}\nSelected runner: {selected_runners}"
         echo_message = f"{message}"
         # Redirect to the index page
         return redirect(url_for("index", echo_message=echo_message))
     else:
-
         services_response = requests.request(
             "GET", services_url, data=payload, headers=headers
         )
@@ -64,7 +86,6 @@ def index():
                 RUNNERS.append({"id": runners["id"], "name": runners["name"]})
 
         echo_message = request.args.get("echo_message", "")
-
         # Render the template with the services and tasks data and popup message
         return render_template(
             "index.html",
@@ -73,7 +94,5 @@ def index():
             runners=RUNNERS,
             echo_message=echo_message,
         )
-
-
 if __name__ == "__main__":
     app.run(debug=True)
