@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PagerDuty AiOps Starter Kit</title>
+  <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">
+  <style>
+    /* Add your own custom styles here */
+
+    /* Styles for the container */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 16px;
+    }
+
+    /* Styles for the status message */
+    .status {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      font-size: 18px;
+      font-weight: light;
+      z-index: 9999;
+    }
+
+    /* Styles for headings */
+    h1{
+      text-align: left;
+      font-weight: light;
+      margin-bottom: 30px;
+      font-size: 30px;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+    h2 {
+      text-align: left;
+      font-weight: bold;
+      margin-bottom: 30px;
+      font-size: 18px;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+
+    /* Styles for labels */
+    label {
+      font-size: 12px;
+      font-family: 'Helvetica Neue Light', sans-serif;
+      font-weight: bold;
+    }
+
+    /* Styles for form elements */
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: none;
+      background-color: #f2f2f2;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-weight: light;
+      font-size: 16px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    button[type="submit"] {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 18px;
+      font-weight: light;
+      cursor: pointer;
+      font-family: 'Helvetica Neue Light', sans-serif;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="pd-logo"><img src="https://www.pagerduty.com/wp-content/uploads/2022/03/Generic-PagerDuty-blog.png" alt="PagerDuty logo" height="50">
+      <h1>PagerDuty AiOps Starter Kit</h1>
+    <form method="POST">
+      <h2>1. On the following service(s):</h2>
+      <select name="services" multiple>
+        {% for service in services %}
+        <option value="{{ service.id }}">🌐 {{ service.name }}</option>
+        {% endfor %}
+      </select>
+      <h2>2. Deploy the following Actions:</h2>
+      {% for task in tasks %}
+      <label>
+        <input type="checkbox" name="tasks" value="{{ task.id }}">📑 {{ task.name }}
+      </label><br>
+      {% endfor %}
+      <br>
+      <h2>3: To this runner:</h2>
+      <select name="runners">
+      {% for runner in runners %}
+      <label>
+        <option value="{{ runner.id }}">🏃 {{ runner.name }}</option>
+      </label><br>
+      {% endfor %}
+    </select> 
+      <br>
+      <button type="submit">Deploy</button>
+    </form>
+
+    {% if echo_message %}
+    <div class="status">{{ echo_message }}</div>
+    {% endif %}
+  </div>
+
+</body>
+</html>
