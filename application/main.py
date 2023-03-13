@@ -1,4 +1,4 @@
-API_TOKEN = ""
+API_TOKEN = "1234"
 # ^^^^^^^
 # Temporary - Enter API key here for testing
 

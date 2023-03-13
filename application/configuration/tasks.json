@@ -5,7 +5,7 @@
       "description": "This is my description",
       "classification": "Diagnostics",
       "type": "runner",
-      "script": "ls -al"
+      "script": "df -k"
     },
     {
       "id": 2,
