@@ -41,12 +41,7 @@ def create_action(selected_services,selected_runner,selected_tasks):
         "action_data_reference": {"script": item['script']},
         "services": services_json
         }}
-
-
-
-
         json_payload = json.dumps(aa_payload)
-
         print("DEPLOYING PAYLOAD")
         print(json_payload)
         print("_______________")
