@@ -10,6 +10,7 @@ SERVICES = []
 RUNNERS = []
 with open("configuration/tasks.json", "r") as f:
     TASKS = json.load(f)
+    
 services_url = "https://api.pagerduty.com/services"
 automation_url = "https://api.pagerduty.com/automation_actions/actions"
 runners_url = "https://api.pagerduty.com/automation_actions/runners"
@@ -48,7 +49,7 @@ def index():
     
     if request.method == "POST":
         # Get the selected services and tasks
-        API_TOKEN = request.form['text_value'] 
+        #API_TOKEN = request.form['text_value'] 
  
         selected_services = request.form.getlist("services")
         selected_tasks = request.form.getlist("tasks")
