@@ -1,10 +1,16 @@
-API_TOKEN =
+# For testing
+# APIKEY = "YOUR KEY"
 
 # Temporary - Enter API Token here for testing
+import os
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 import json
-app = Flask(__name__)
+app = Flask(__name__) 
+
+API_TOKEN = os.environ['APIKEY']
+
+
 # Dummy data for services
 SERVICES = []
 RUNNERS = []
