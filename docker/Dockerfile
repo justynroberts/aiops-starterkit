@@ -17,7 +17,7 @@
 # SOFTWARE.
 
 # Use the official Python 3 image as the base image
-FROM 3.9-slim
+FROM python:3.9-slim
 
 # Set the working directory to /app
 WORKDIR /app

@@ -2,6 +2,7 @@ import json
 # used to jsonify code
 code = """
 
+# hello this is a test
 import random
 import string
  

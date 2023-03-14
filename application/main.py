@@ -1,4 +1,4 @@
-API_TOKEN = 
+API_TOKEN =
 
 # Temporary - Enter API Token here for testing
 from flask import Flask, render_template, request, redirect, url_for
