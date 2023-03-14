@@ -1,14 +1,9 @@
-API_TOKEN = ""
-# ^^^^^^^
+API_TOKEN =""
 # Temporary - Enter API key here for testing
-
-
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 import json
-
 app = Flask(__name__)
-
 # Dummy data for services
 SERVICES = []
 RUNNERS = []
@@ -41,21 +36,22 @@ def create_action(selected_services,selected_runner,selected_tasks):
         "action_data_reference": {"script": item['script']},
         "services": services_json
         }}
-        json_payload = json.dumps(aa_payload)
         print("DEPLOYING PAYLOAD")
-        print(json_payload)
         print("_______________")
-        response = requests.request("POST", automation_url, json=json_payload, headers=headers)
+        response = requests.request("POST", automation_url, json=aa_payload, headers=headers)
         print(response.text)
     return ()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    
     if request.method == "POST":
         # Get the selected services and tasks
+        API_TOKEN = request.form['text_value'] 
+ 
         selected_services = request.form.getlist("services")
         selected_tasks = request.form.getlist("tasks")
-        selected_runners = request.form.getlist("runners")
+        selected_runners = request.form.getlist("runners")  
         # Do something with the selected services and tasks
         create_action(selected_services,selected_runners,selected_tasks)
         message = f"Selected services: {selected_services}\nSelected tasks: {selected_tasks}\nSelected runner: {selected_runners}"
