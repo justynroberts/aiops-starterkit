@@ -17,7 +17,7 @@
 # SOFTWARE.
 
 # Use the official Python 3 image as the base image
-FROM python:3
+FROM 3.9-slim
 
 # Set the working directory to /app
 WORKDIR /app
@@ -32,7 +32,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Define environment variables
-ENV APIKEY="Hashtag or Twitter Handle eg @Justynroberts"
+ENV APIKEY="ENTER PD API KEY"
 
 # Set the command to run when the container starts
 CMD ["python", "-u", "main.py", "$API_KEY"]
