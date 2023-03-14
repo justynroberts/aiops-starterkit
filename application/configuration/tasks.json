@@ -1,8 +1,8 @@
 [
     {
       "id": 1,
-      "name": "Diagnostics - Check Environment 1 ",
-      "description": "This is my description",
+      "name": "Diagnostics - Sample Deployment ",
+      "description": "A Sample diagnostics deployment",
       "classification": "Diagnostics",
       "type": "runner",
       "script": "\n\nimport random\nimport string\n \nuse_digits_answer = input(\"Use digits [y]/n: \")\nif use_digits_answer.lower() == \"n\":\n    use_digits = False\nelse:\n    use_digits = True\n \nuse_punctuation_answer = input(\"Use special characters [y]/n: \")\nif use_punctuation_answer.lower() == \"n\":\n    use_punctuation = False\nelse:\n    use_punctuation = True\n \npassword_length_answer = input(\"Length of the password [10]: \")\nif password_length_answer == \"\":\n    password_length = 10\nelse:\n    password_length = int(password_length_answer)\n \nletters = string.ascii_letters\ndigits = string.digits\npunctuation = string.punctuation\n \nsymbols = letters\nif use_digits:\n    symbols += digits\nif use_punctuation:\n    symbols += punctuation\n \npassword = \"\".join(random.choice(symbols) for i in range(password_length))\nprint(password)\n\n\n\n\n"
