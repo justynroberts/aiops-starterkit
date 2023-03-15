@@ -1,32 +1,34 @@
 # For testing
-# APIKEY = "YOUR KEY"
-
+#APIKEY = "YOUR KEY"
+#APIKEY_REGION = "US"
 # Temporary - Enter API Token here for testing
 import os
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 import json
 app = Flask(__name__) 
-
 API_TOKEN = os.environ['APIKEY']
-API_REGION = os.environ['API_REGION']
-
-
+APIKEY_REGION = os.environ['API_REGION']
 # Dummy data for services
 SERVICES = []
 RUNNERS = []
 with open("configuration/tasks.json", "r") as f:
     TASKS = json.load(f)
-    
-services_url = "https://api.pagerduty.com/services"
-automation_url = "https://api.pagerduty.com/automation_actions/actions"
-runners_url = "https://api.pagerduty.com/automation_actions/runners"
 payload = ""
 headers = {
-    "Accept": "application/vnd.pagerduty+json;version=2",
     "Content-Type": "application/json",
     "Authorization": "Token token=" + API_TOKEN,
 }
+
+if APIKEY_REGION="EU":
+    services_url = "https://api.eu.pagerduty.com/services"
+    automation_url = "https://api.eu.pagerduty.com/automation_actions/actions"
+    runners_url = "https://api.eu.pagerduty.com/automation_actions/runners"
+else:
+    services_url = "https://api.pagerduty.com/services"
+    automation_url = "https://api.pagerduty.com/automation_actions/actions"
+    runners_url = "https://api.pagerduty.com/automation_actions/runners"
+
 # Main create AA task
 def create_action(selected_services,selected_runner,selected_tasks):
     selected_tasks = [int(id) for id in selected_tasks]
@@ -36,7 +38,6 @@ def create_action(selected_services,selected_runner,selected_tasks):
         for service in selected_services:
             service_json = {"id": service, "type": "service_reference"}
             services_json.append(service_json)
-  
         aa_payload = {"action": {
         "name": item['name'],
         "description": item['description'],
@@ -45,10 +46,7 @@ def create_action(selected_services,selected_runner,selected_tasks):
         "action_data_reference": {"script": item['script']},
         "services": services_json
         }}
-        print("DEPLOYING PAYLOAD")
-        print("_______________")
         response = requests.request("POST", automation_url, json=aa_payload, headers=headers)
-        print(response.text)
     return ()
 
 @app.route("/", methods=["GET", "POST"])
@@ -57,7 +55,6 @@ def index():
     if request.method == "POST":
         # Get the selected services and tasks
         #API_TOKEN = request.form['text_value'] 
- 
         selected_services = request.form.getlist("services")
         selected_tasks = request.form.getlist("tasks")
         selected_runners = request.form.getlist("runners")  
