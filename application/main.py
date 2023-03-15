@@ -93,7 +93,6 @@ def update_api_key_and_region():
         if runners["runner_type"] == "sidecar":
           RUNNERS.append({"id": runners["id"], "name": runners["name"]})
 
-    print(SERVICES)
     return jsonify({
         'services': SERVICES,
         'runners': RUNNERS,
@@ -105,15 +104,12 @@ def index():
         selected_services = request.form.getlist("services")
         selected_tasks = request.form.getlist("tasks")
         selected_runners = request.form.getlist("runners")  
-        # Do something with the selected services and tasks
         create_action(selected_services,selected_runners,selected_tasks)
         message = f"Selected services: {selected_services}\nSelected tasks: {selected_tasks}\nSelected runner: {selected_runners}"
         echo_message = f"{message}"
-        # Redirect to the index page
         return redirect(url_for("index", echo_message=echo_message))
     else:
         echo_message = request.args.get("echo_message", "")
-        # Render the template with the services and tasks data and popup message
         return render_template(
             "index.html",
             services=SERVICES,
