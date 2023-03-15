@@ -9,6 +9,7 @@ import json
 app = Flask(__name__) 
 
 API_TOKEN = os.environ['APIKEY']
+API_REGION = os.environ['API_REGION']
 
 
 # Dummy data for services

@@ -33,6 +33,7 @@ COPY . .
 
 # Define environment variables
 ENV APIKEY="ENTER PD API KEY"
+ENV APIKEY_REGION="US/EU"
 
 # Set the command to run when the container starts
-CMD ["python", "-u", "main.py", "$API_KEY"]
+CMD ["python", "-u", "main.py", "$API_KEY" "$API_KEY_REGION"]
