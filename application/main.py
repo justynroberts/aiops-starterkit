@@ -1,15 +1,18 @@
-# For testing
-#APIKEY = "YOUR KEY"
-#APIKEY_REGION = "US"
-# Temporary - Enter API Token here for testing
 import os
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 import json
 app = Flask(__name__) 
-API_TOKEN = os.environ['APIKEY']
-APIKEY_REGION = os.environ['API_REGION']
-# Dummy data for services
+
+# For testing---------------------------------------
+# Temporary - Enter API Token here for testing
+API_KEY = "u+ssxrNVefysigXJyEHw"
+APIKEY_REGION = "US"
+# or swap out for env variables
+
+#API_TOKEN = os.environ['APIKEY']
+#APIKEY_REGION = os.environ['API_REGION']
+
 SERVICES = []
 RUNNERS = []
 with open("configuration/tasks.json", "r") as f:
@@ -17,10 +20,9 @@ with open("configuration/tasks.json", "r") as f:
 payload = ""
 headers = {
     "Content-Type": "application/json",
-    "Authorization": "Token token=" + API_TOKEN,
+    "Authorization": "Token token=" + API_KEY,
 }
-
-if APIKEY_REGION="EU":
+if APIKEY_REGION == "EU":
     services_url = "https://api.eu.pagerduty.com/services"
     automation_url = "https://api.eu.pagerduty.com/automation_actions/actions"
     runners_url = "https://api.eu.pagerduty.com/automation_actions/runners"
@@ -28,7 +30,6 @@ else:
     services_url = "https://api.pagerduty.com/services"
     automation_url = "https://api.pagerduty.com/automation_actions/actions"
     runners_url = "https://api.pagerduty.com/automation_actions/runners"
-
 # Main create AA task
 def create_action(selected_services,selected_runner,selected_tasks):
     selected_tasks = [int(id) for id in selected_tasks]
