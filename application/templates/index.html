@@ -1,24 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>PagerDuty AiOps Starter Kit</title>
-  <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">
-  <style>
-    /* Add your own custom styles here */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PagerDuty AIOps Starter Kit </title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Dark theme -->
+  <link rel="stylesheet" href="https://bootswatch.com/5/darkly/bootstrap.min.css">
 
-    /* Styles for the container */
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
-      font-family: 'Helvetica Neue', sans-serif;
-      font-size: 16px;
-    }
-
-    /* Styles for the status message */
-    .status {
+<style>
+      .status {
       position: fixed;
       bottom: 0;
       left: 0;
@@ -31,100 +23,179 @@
       font-weight: light;
       z-index: 9999;
     }
-
-    /* Styles for headings */
-    h1{
-      text-align: left;
-      font-weight: light;
-      margin-bottom: 30px;
-      font-size: 30px;
-      font-family: 'Helvetica Neue', sans-serif;
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 15px;
     }
-    h2 {
-      text-align: left;
-      font-weight: bold;
-      margin-bottom: 30px;
-      font-size: 18px;
-      font-family: 'Helvetica Neue', sans-serif;
-    }
-
-    /* Styles for labels */
-    label {
-      font-size: 12px;
-      font-family: 'Helvetica Neue Light', sans-serif;
-      font-weight: bold;
-    }
-
-    /* Styles for form elements */
-    select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      border: none;
-      background-color: #f2f2f2;
-      font-family: 'Helvetica Neue', sans-serif;
-      font-weight: light;
-      font-size: 16px;
-    }
-
-    input[type="checkbox"] {
-      margin-right: 10px;
-    }
-
-    button[type="submit"] {
-      background-color: #333;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 18px;
-      font-weight: light;
-      cursor: pointer;
-      font-family: 'Helvetica Neue Light', sans-serif;
-    }
-
-    button[type="submit"]:hover {
-      background-color: #555;
-    }
-  </style>
+</style>
 </head>
 <body>
-
-  <div class="container">
-    <div class="pd-logo"><img src="https://www.pagerduty.com/wp-content/uploads/2022/03/Generic-PagerDuty-blog.png" alt="PagerDuty logo" height="50">
-      <h1>PagerDuty AiOps Starter Kit</h1>
-      
-    <form method="POST">
-      <br>
-      <h2>2️⃣ On the following service(s):</h2>
-      <select name="services" multiple>
-        {% for service in services %}
-        <option value="{{ service.id }}">🌐 {{ service.name }}</option>
-        {% endfor %}
-      </select>
-      <h2>3️⃣ Deploy the following Actions:</h2>
-      {% for task in tasks %}
-      <label>
-        <input type="checkbox" name="tasks" value="{{ task.id }}">📑 {{ task.name }}
-      </label><br>
-      {% endfor %}
-      <br>
-      <h2>4️⃣ To this runner:</h2>
-      <select name="runners">
-      {% for runner in runners %}
-      <label>
-        <option value="{{ runner.id }}">🏃 {{ runner.name }}</option>
-      </label><br>
-      {% endfor %}
-    </select> 
-      <br>
-      <button type="submit">5️⃣ Deploy</button>
-    </form>
-
-    {% if echo_message %}
-    <div class="status">{{ echo_message }}</div>
-    {% endif %}
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div id="infoToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">AIOps Starter Kit</strong>
+        <small>Just now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+       Deploying Tasks To Service(s) & Runners
+      </div>
+    </div>
   </div>
+  <div class="container mt-4">
+    <div class="header">
+      <img src="https://www.pagerduty.com/wp-content/uploads/2022/03/Generic-PagerDuty-blog.png" alt="PagerDuty logo" height="50">
+      <h1>PagerDuty AiOps Starter Kit</h1>
+    </div>
+<div class="container mt-4">
+  <div class="col-md-6">
+  <form id="myForm">
+    <form method="POST">
+    <div class="mb-3">
+      <label for="apiKey" class="form-label">⚠️ PagerDuty API Key</label>
+      <input type="text" class="form-control" id="apiKey" placeholder="Enter your API key from the PagerDuty UI">
+    </div>
+    <div class="mb-3">
+      <label for="region" class="form-label">⚠️ Service Region (EU/US) </label>
+      <select class="form-select" id="region">
+        <option selected disabled>Select a region 🇺🇸 🇪🇺</option>
+        <option value="EU">EU</option>
+        <option value="US">US</option>
+      </select>
+    </div>
+    
+    <div id="hiddenElements" style="display: none;">
+     
+
+      <div class="mb-3">
+        <label class="form-label">Deploy the Following Example Actions:</label>
+        <div>
+          <div class="form-check">
+            {% for task in tasks %}
+            <label>
+              <input type="checkbox" name="tasks" value="{{ task.id }}">-  📑  -   {{ task.name }}
+            </label><br>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="services" class="form-label">Services</label>
+          <select class="form-select" name="services" id="services" multiple>
+          </select>
+        </div>
+      </div>
+<br>      
+Against this Runner:
+<br>
+      <div class="mb-3">
+        <select name="runners">
+        {% for runner in runners %}
+        <label>
+          <option value="{{ runner.id }}">🏃 {{ runner.name }}</option>
+        </label><br>
+        {% endfor %}
+      </select> 
+      <button type="submit">Deploy</button>
+    </form>
+      </div>
+    </div>
+</div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      function showToast(message) {
+    const infoToast = new bootstrap.Toast(document.getElementById('infoToast'), {
+      delay: 3000, // Duration to show the toast (in milliseconds)
+      autohide: true // Automatically hide the toast
+    });
+
+    // Set the toast message
+    document.querySelector('#infoToast .toast-body').textContent = message;
+
+    // Show the toast
+    infoToast.show();
+  }
+      function updateApiKeyAndRegion() {
+        $.ajax({
+          url: '/update_api_key_and_region',
+          method: 'POST',
+          data: {
+            api_key: $apiKey.val(),
+            region: $region.val()
+          },
+          success: function(response) {
+  console.log('Success response:', response); // Debug: log the response
+
+  // Update the "services" field.
+  const $services = $('select[name="services"]');
+  $services.empty();
+  if (response.services) {
+    console.log('Services:', response.services); // Debug: log the services array
+    response.services.forEach(function(service) {
+      $services.append(`<option value="${service.id}">🌐 ${service.name}</option>`);
+    });
+  } else {
+    console.error('Services array is undefined.');
+  }
+  // Update the "runners" field.
+  const $runners = $('select[name="runners"]');
+  $runners.empty();
+  if (response.runners) {
+    console.log('Runners:', response.runners); // Debug: log the runners array
+    response.runners.forEach(function(runner) {
+      $runners.append(`<option value="${runner.id}">🏃 ${runner.name}</option>`);
+    });
+  } else {
+    console.error('Runners array is undefined.');
+  }
+},
+          error: function(error) {
+            console.error('Error updating API key and region:', error);
+          }
+        });
+    
+        $hiddenElements.show();
+        $submitButton.prop('disabled', false);
+      }
+      const $apiKey = $('#apiKey');
+      const $region = $('#region');
+      const $hiddenElements = $('#hiddenElements');
+      const $submitButton = $('#myForm button[type="submit"]');
+    
+      function updateFormState() {
+        const apiKeyFilled = $apiKey.val().trim().length > 6;
+        const regionSelected = $region.val() !== null;
+        if (apiKeyFilled && regionSelected) {
+          updateApiKeyAndRegion();
+        } 
+      }
+      $apiKey.on('input', updateFormState);
+      $region.on('change', updateFormState);
+      $('#myForm').on('submit', function(event) {
+        event.preventDefault();
+        var toastElement = document.getElementById('infoToast');
+        var toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    // Wait for the toast to close before submitting the form
+    $(toastElement).on('hidden.bs.toast', () => {
+      this.submit();
+    });
+     
+      });
+    });
+    
+    </script>
+
+{% if echo_message %}
+<div class="status">{{ echo_message }}</div>
+{% endif %}
+    
 </body>
 </html>
