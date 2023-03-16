@@ -10,7 +10,7 @@
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -22,18 +22,17 @@ FROM python:3.9-slim
 # Set the working directory to /app
 WORKDIR /app
 
-# Copy the requirements.txt file to the container
-COPY requirements.txt ./
+# Copy the content of the application directory to the app directory in the container
+COPY application .
 
 # Install the required pip modules
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the files to the container
-COPY . .
 
 # Define environment variables
 ENV APIKEY="ENTER PD API KEY"
 ENV APIKEY_REGION="US/EU"
 
 # Set the command to run when the container starts
-CMD ["python", "-u", "main.py", "$API_KEY" "$API_KEY_REGION"]
+#CMD ["bash", "-i"]
+CMD ["python", "-u", "main.py", "$API_KEY", "$API_KEY_REGION"]
