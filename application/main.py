@@ -3,12 +3,18 @@ from flask import Flask, render_template, request, redirect, url_for,jsonify
 import requests
 import json
 app = Flask(__name__) 
-SERVICES = []
-RUNNERS = []
+services_url=""
+runners_url=""
+automation_url=""
+API_KEY=""
+
 with open("configuration/tasks.json", "r") as f:
     TASKS = json.load(f)
 
-# Main create AA task
+RUNNERS = []
+SERVICES = []
+
+
 
 def updateservices():
   services_response = requests.request(
@@ -29,6 +35,7 @@ def updateservices():
           RUNNERS.append({"id": runners["id"], "name": runners["name"]})
 
 def create_action(selected_services,selected_runner,selected_tasks):
+    print ("deploying....")
     selected_tasks = [int(id) for id in selected_tasks]
     processed_task = [item for item in TASKS if item['id'] in selected_tasks]
     for item in processed_task:
@@ -45,29 +52,32 @@ def create_action(selected_services,selected_runner,selected_tasks):
         "services": services_json
         }}
         response = requests.request("POST", automation_url, json=aa_payload, headers=headers)
-    return ()
+    return (response)
 
 @app.route('/update_api_key_and_region', methods=['POST'])
 def update_api_key_and_region():
     API_KEY = request.form.get('api_key')
     APIKEY_REGION = request.form.get('region')
-    if APIKEY_REGION == "EU":
-        services_url = "https://api.eu.pagerduty.com/services"
-        automation_url = "https://api.eu.pagerduty.com/automation_actions/actions"
-        runners_url = "https://api.eu.pagerduty.com/automation_actions/runners"
-    else:
-        services_url = "https://api.pagerduty.com/services"
-        automation_url = "https://api.pagerduty.com/automation_actions/actions"
-        runners_url = "https://api.pagerduty.com/automation_actions/runners"
-
     payload = ""
     headers = {
     "Content-Type": "application/json",
     "Authorization": "Token token=" + API_KEY,}
 
-    RUNNERS = []
-    SERVICES = []
+    if APIKEY_REGION == "EU":
 
+        services_url = "https://api.eu.pagerduty.com/services"
+     
+        automation_url = "https://api.eu.pagerduty.com/automation_actions/actions"
+
+        runners_url = "https://api.eu.pagerduty.com/automation_actions/runners"
+    else:
+        services_url = "https://api.pagerduty.com/services"
+      
+        automation_url = "https://api.pagerduty.com/automation_actions/actions"
+     
+        runners_url = "https://api.pagerduty.com/automation_actions/runners"
+        
+   
     services_response = requests.request(
                 "GET", services_url, data=payload, headers=headers
             )
@@ -96,8 +106,9 @@ def index():
         selected_runners = request.form.getlist("runners")  
         create_action(selected_services,selected_runners,selected_tasks)
         message = f"Selected services: {selected_services}\nSelected tasks: {selected_tasks}\nSelected runner: {selected_runners}"
-        echo_message = f"{message}"
+        create_action(selected_services,selected_runners,selected_tasks)
         return redirect(url_for("index", echo_message=echo_message))
+
     else:
         echo_message = request.args.get("echo_message", "")
         return render_template(
@@ -109,5 +120,5 @@ def index():
         )
 if __name__ == "__main__":
 
-    app.run(port=5001,debug=True)
+    app.run(host="0.0.0.0",port=5001,debug=True)
 

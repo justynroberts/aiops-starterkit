@@ -35,7 +35,7 @@
   <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
     <div id="infoToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header">
-        <strong class="me-auto">AIOps Starter Kit</strong>
+        <strong class="me-auto">PagerDuty™️ AIOps Starter Kit</strong>
         <small>Just now</small>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
@@ -51,8 +51,7 @@
     </div>
 <div class="container mt-4">
   <div class="col-md-6">
-  <form id="myForm">
-    <form method="POST">
+  <form id="myForm" method="POST">
     <div class="mb-3">
       <label for="apiKey" class="form-label">⚠️ PagerDuty API Key</label>
       <input type="text" class="form-control" id="apiKey" placeholder="Enter your API key from the PagerDuty UI">
@@ -65,10 +64,7 @@
         <option value="US">US</option>
       </select>
     </div>
-    
     <div id="hiddenElements" style="display: none;">
-     
-
       <div class="mb-3">
         <label class="form-label">Deploy the Following Example Actions:</label>
         <div>
@@ -183,19 +179,12 @@ Against this Runner:
         var toastElement = document.getElementById('infoToast');
         var toast = new bootstrap.Toast(toastElement);
         toast.show();
-    // Wait for the toast to close before submitting the form
     $(toastElement).on('hidden.bs.toast', () => {
       this.submit();
     });
      
       });
     });
-    
     </script>
-
-{% if echo_message %}
-<div class="status">{{ echo_message }}</div>
-{% endif %}
-    
 </body>
 </html>
