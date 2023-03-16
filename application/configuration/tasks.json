@@ -1,32 +1,32 @@
 [
     {
       "id": 1,
-      "name": "Diagnostics - Sample Deployment ",
-      "description": "A Sample diagnostics deployment",
+      "name": "Tier 1 - Diagnostics - Docker health",
+      "description": "Provides health information about Docker.",
       "classification": "Diagnostics",
       "type": "runner",
-      "script": "\n\nimport random\nimport string\n \nuse_digits_answer = input(\"Use digits [y]/n: \")\nif use_digits_answer.lower() == \"n\":\n    use_digits = False\nelse:\n    use_digits = True\n \nuse_punctuation_answer = input(\"Use special characters [y]/n: \")\nif use_punctuation_answer.lower() == \"n\":\n    use_punctuation = False\nelse:\n    use_punctuation = True\n \npassword_length_answer = input(\"Length of the password [10]: \")\nif password_length_answer == \"\":\n    password_length = 10\nelse:\n    password_length = int(password_length_answer)\n \nletters = string.ascii_letters\ndigits = string.digits\npunctuation = string.punctuation\n \nsymbols = letters\nif use_digits:\n    symbols += digits\nif use_punctuation:\n    symbols += punctuation\n \npassword = \"\".join(random.choice(symbols) for i in range(password_length))\nprint(password)\n\n\n\n\n"
+      "script": "\n\n#!/bin/bash\n#Requires Docker to be installed on the server used for the Automation Action runner.\n\n# Check if Docker is installed\nif ! command -v docker >/dev/null 2>&1; then\n  echo \"Docker is not installed!\"\n  exit 1\nfi\n\n\n# Check if Docker daemon is running\nif ! systemctl is-active docker &> /dev/null; then\n    echo \"ERROR: Docker daemon is not running.\"\n    exit 1\nfi\n\n\n# Get the Docker version\nDOCKER_VERSION=$(docker --version)\n\n# Get the Docker containers count\nDOCKER_CONTAINERS_COUNT=$(docker ps -q | wc -l)\n\n# Get the Docker images count\nDOCKER_IMAGES_COUNT=$(docker images -q | wc -l)\n\n# Get the Docker volumes count\nDOCKER_VOLUMES_COUNT=$(docker volume ls -q | wc -l)\n\n# Get the Docker networks count\nDOCKER_NETWORKS_COUNT=$(docker network ls -q | wc -l)\n\n# Print the health information\necho -e \"------Docker Health Information-----\"\necho -e \"Docker version:\t\t $DOCKER_VERSION\"\necho -e \"Docker containers count: $DOCKER_CONTAINERS_COUNT\"\necho -e \"Docker images count:\t $DOCKER_IMAGES_COUNT\"\necho -e \"Docker volumes count:\t $DOCKER_VOLUMES_COUNT\"\necho -e \"Docker networks count:\t $DOCKER_NETWORKS_COUNT\"\n\n# Check if Docker version is up to date\nDOCKER_VERSION=$(docker version --format '{{.Server.Version}}')\nif [ \"${DOCKER_VERSION}\" != \"$(curl -s https://api.github.com/repos/docker/docker-ce/releases/latest | grep tag_name | cut -d '\"' -f 4 | cut -d 'v' -f 2)\" ]; then\n    echo \"\ud83d\udfe5 Docker version is not up to date.\"\nfi\n\n\n"
     },
     {
       "id": 2,
-      "name": "Diagnostics - Check Environment 2 ",
-      "description": "This is my description",
+      "name": "Tier 2 - Ansible command",
+      "description": "Ansible ping command.",
       "classification": "Diagnostics",
       "type": "runner",
-      "script": "ls -al"
+      "script": "\n\n#!/bin/bash\n\n# This script requires that Ansible is installed on the same server as the Automation Action runner.\n# Before using this script, check if your alert payload includes a hostname and change the pd.alert variable as required.\n\n\necho -e \"This an example of an ansible command line script.\"\necho -e \"It connects to the server name included the alert payload.\"\n\nansible ${pd.alert.details.hostname} -i ansible/hosts -m ping\n\n\n"
     },
     {
       "id": 3,
-      "name": "Diagnostics - Check Environment 3 ",
-      "description": "This is my description",
+      "name": "Tier 2 - PagerDuty API - Add alert description to an incident note",
+      "description": "This requires a PagerDuty API key and a valid email address.",
       "classification": "Diagnostics",
       "type": "runner",
-      "script": "ls -al"
+      "script": "\n\n#!/bin/bash\n\n# read PagerDuty API key from a file called pagerdutyAPItoken which is in a directory called credentials below the runner directory\n# the file only contains the API key\n# you need to create this on your runner or do something similar\ntoken=$(cat credentials/pagerdutyAPItoken)\n\n# The email address of a valid user associated with the account making the request.\nemailAddress=\"cfischer@pagerduty.com\"\n\ncurl --location --request POST \"https://api.pagerduty.com/incidents/${pd.incident.id}/notes\" --header \"Authorization: Token token=$token\" --header \"Accept: application/vnd.pagerduty+json;version=2\" --header \"Content-Type: application/json\" --header \"From: $emailAddress\" --header \"Content-Type: application/json\" --data-raw \"{\n    \"note\": {\n        \"content\": \"Alert received: ${pd.alert.description}\"\n    }\n}\"\n\n\n\n"
     },
     {
       "id": 4,
       "name": "Diagnostics - Check Environment 4 ",
-      "description": "This is my description",
+      "description": "This is my description ",
       "classification": "Diagnostics",
       "type": "runner",
       "script": "ls -al"
