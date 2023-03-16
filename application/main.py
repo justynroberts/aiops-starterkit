@@ -3,39 +3,17 @@ from flask import Flask, render_template, request, redirect, url_for,jsonify
 import requests
 import json
 app = Flask(__name__) 
-services_url=""
-runners_url=""
-automation_url=""
-API_KEY=""
 
+services_url=runners_url=automation_url=API_KEY=""
+RUNNERS = []
+SERVICES = []
+#grab the local json
+#future improvement could get tasks.json remotely.
 with open("configuration/tasks.json", "r") as f:
     TASKS = json.load(f)
 
-RUNNERS = []
-SERVICES = []
-
-
-
-def updateservices():
-  services_response = requests.request(
-            "GET", services_url, data=payload, headers=headers
-        )
-  services_data = services_response.json()
-  print (services_data)
-  runner_response = requests.request(
-            "GET", runners_url, data=payload, headers=headers
-        )
-  runners_data = runner_response.json()
-  RUNNERS = []
-  SERVICES = []
-  for service in services_data["services"]:
-      SERVICES.append({"id": service["id"], "name": service["name"]})
-      for runners in runners_data["runners"]:
-        if runners["runner_type"] == "sidecar":
-          RUNNERS.append({"id": runners["id"], "name": runners["name"]})
 
 def create_action(selected_services,selected_runner,selected_tasks):
-    print ("deploying....")
     selected_tasks = [int(id) for id in selected_tasks]
     processed_task = [item for item in TASKS if item['id'] in selected_tasks]
     for item in processed_task:
@@ -56,6 +34,7 @@ def create_action(selected_services,selected_runner,selected_tasks):
 
 @app.route('/update_api_key_and_region', methods=['POST'])
 def update_api_key_and_region():
+    global automation_url, headers
     API_KEY = request.form.get('api_key')
     APIKEY_REGION = request.form.get('region')
     payload = ""
@@ -64,20 +43,14 @@ def update_api_key_and_region():
     "Authorization": "Token token=" + API_KEY,}
 
     if APIKEY_REGION == "EU":
-
         services_url = "https://api.eu.pagerduty.com/services"
-     
         automation_url = "https://api.eu.pagerduty.com/automation_actions/actions"
-
         runners_url = "https://api.eu.pagerduty.com/automation_actions/runners"
     else:
         services_url = "https://api.pagerduty.com/services"
-      
         automation_url = "https://api.pagerduty.com/automation_actions/actions"
-     
         runners_url = "https://api.pagerduty.com/automation_actions/runners"
         
-   
     services_response = requests.request(
                 "GET", services_url, data=payload, headers=headers
             )
@@ -85,18 +58,18 @@ def update_api_key_and_region():
     runner_response = requests.request(
                 "GET", runners_url, data=payload, headers=headers
             )
+
     runners_data = runner_response.json()
     for service in services_data["services"]:
         SERVICES.append({"id": service["id"], "name": service["name"]})
-
     for runners in runners_data["runners"]:
         if runners["runner_type"] == "sidecar":
-          RUNNERS.append({"id": runners["id"], "name": runners["name"]})
+           RUNNERS.append({"id": runners["id"], "name": runners["name"]})
 
     return jsonify({
         'services': SERVICES,
         'runners': RUNNERS,
-    })
+                  })
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -105,18 +78,14 @@ def index():
         selected_tasks = request.form.getlist("tasks")
         selected_runners = request.form.getlist("runners")  
         create_action(selected_services,selected_runners,selected_tasks)
-        message = f"Selected services: {selected_services}\nSelected tasks: {selected_tasks}\nSelected runner: {selected_runners}"
-        create_action(selected_services,selected_runners,selected_tasks)
-        return redirect(url_for("index", echo_message=echo_message))
-
+        return render_template("docs.html")
     else:
-        echo_message = request.args.get("echo_message", "")
+        pass
         return render_template(
             "index.html",
             services=SERVICES,
             tasks=TASKS,
             runners=RUNNERS,
-            echo_message=echo_message,
         )
 if __name__ == "__main__":
 
