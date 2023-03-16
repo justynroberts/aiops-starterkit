@@ -94,6 +94,8 @@ def update_api_key_and_region():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    SERVICES=[]
+    RUNNERS=[]
     if request.method == "POST":
         selected_services = request.form.getlist("services")
         selected_tasks = request.form.getlist("tasks")
