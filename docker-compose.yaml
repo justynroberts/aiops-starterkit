@@ -1,0 +1,9 @@
+version: '3'
+services:
+  aiops-starterkit:
+    image: public.ecr.aws/s4g5u2s4/aiops-starterkit:latest
+    ports:
+      - 5001:5001
+    environment:
+      - APIKEY_REGION="US_or_EU"
+      - APIKEY="Enter_your_PagerDuty_API_key"
