@@ -8,7 +8,7 @@
 -   To showcase and stimulate thinking around what's possible.
 -   To help drive lower resolution times by introducing Automation early.
 
-## Deployment Method
+## Deployment Methods
 
 The application utilizes the PagerDuty API to deploy a number of sample Automation Actions. These can be scoped to one or more services and assigned to a runner, the component hosted within a customer environment. Learn more about the runner [here](https://www.pagerduty.com/docs/guides/dispatch/runners/).
 
@@ -26,6 +26,11 @@ It could be easily deployed on a website (or Github repo).
 -   Flask
 
 The actions are contained in the configuration directory and can be easily modified.
+
+## Prerequisites
+
+you MUST have a runner installed as per https://www.pagerduty.com/docs/guides/dispatch/runners/
+
 
 ## Installation
 
@@ -72,7 +77,22 @@ Run the application
 
 Thats it. Simple. Default port is 5001
 
-Included Jobs:
+### Included Jobs:
 
 Category
-Diagnostics
+
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+
+
+### Future Plans.
+At the moment the PagerDuty API is used. This could be modified for Terraform in the future
+A Runner Configuration could also be built
