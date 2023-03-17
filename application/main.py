@@ -101,7 +101,7 @@ def index():
         selected_tasks = request.form.getlist("tasks")
         selected_runners = request.form.getlist("runners")  
         create_action(selected_services,selected_runners,selected_tasks)
-        return render_template("docs.html")
+        return redirect('/success')
     else:
         pass
         return render_template(
@@ -110,6 +110,12 @@ def index():
             tasks=TASKS,
             runners=RUNNERS,
         )
+        
+@app.route('/success')
+def success():
+    return render_template('docs.html')
+
+
 if __name__ == "__main__":
 
     app.run(host="0.0.0.0",port=5001,debug=True)
