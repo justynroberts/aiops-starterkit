@@ -81,24 +81,22 @@ Thats it. Simple. Default port is 5001
 
 Category
 
-Diagnostics - Node.js Health
-Diagnostics - Docker Health
-Diagnostics - System Config
-Diagnostics - System Health Check.
-Python script - System Health Chec
-Troubleshooting - Displays Alert Payloa
-Troubleshooting - Runner Basic Information
-Ansible - Playbook
-Ansible - Simple Command
-Diagnostics - AWS EC2 Instance Health Check
-Diagnostics - Docker Container Health Check
-Diagnostics - Kubernetes Health Check
-Diagnostics - Network Connectivity Check
-PagerDuty API - Add Alert Description to Incident Note
-PagerDuty API - Sends Incident Details via Email.
-Framework - Restart Service
-
-
+- Diagnostics - Node.js Health
+- Diagnostics - Docker Health
+- Diagnostics - System Config
+- Diagnostics - System Health Check.
+- Python script - System Health Chec
+- Troubleshooting - Displays Alert Payloa
+- Troubleshooting - Runner Basic Information
+- Ansible - Playbook
+- Ansible - Simple Command
+- Diagnostics - AWS EC2 Instance Health Check
+- Diagnostics - Docker Container Health Check
+- Diagnostics - Kubernetes Health Check
+- Diagnostics - Network Connectivity Check
+- PagerDuty API - Add Alert Description to Incident Note
+- PagerDuty API - Sends Incident Details via Email.
+- Framework - Restart Service
 
 ### Future Plans.
 At the moment the PagerDuty API is used. This could be modified for Terraform in the future
