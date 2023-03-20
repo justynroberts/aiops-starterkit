@@ -1,82 +1,136 @@
+
 [
-    {
-      "id": 1,
-      "name": "Tier 1 - Diagnostics - Docker health",
-      "description": "Provides health information about Docker.",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "\n\n#!/bin/bash\n#Requires Docker to be installed on the server used for the Automation Action runner.\n\n# Check if Docker is installed\nif ! command -v docker >/dev/null 2>&1; then\n  echo \"Docker is not installed!\"\n  exit 1\nfi\n\n\n# Check if Docker daemon is running\nif ! systemctl is-active docker &> /dev/null; then\n    echo \"ERROR: Docker daemon is not running.\"\n    exit 1\nfi\n\n\n# Get the Docker version\nDOCKER_VERSION=$(docker --version)\n\n# Get the Docker containers count\nDOCKER_CONTAINERS_COUNT=$(docker ps -q | wc -l)\n\n# Get the Docker images count\nDOCKER_IMAGES_COUNT=$(docker images -q | wc -l)\n\n# Get the Docker volumes count\nDOCKER_VOLUMES_COUNT=$(docker volume ls -q | wc -l)\n\n# Get the Docker networks count\nDOCKER_NETWORKS_COUNT=$(docker network ls -q | wc -l)\n\n# Print the health information\necho -e \"------Docker Health Information-----\"\necho -e \"Docker version:\t\t $DOCKER_VERSION\"\necho -e \"Docker containers count: $DOCKER_CONTAINERS_COUNT\"\necho -e \"Docker images count:\t $DOCKER_IMAGES_COUNT\"\necho -e \"Docker volumes count:\t $DOCKER_VOLUMES_COUNT\"\necho -e \"Docker networks count:\t $DOCKER_NETWORKS_COUNT\"\n\n# Check if Docker version is up to date\nDOCKER_VERSION=$(docker version --format '{{.Server.Version}}')\nif [ \"${DOCKER_VERSION}\" != \"$(curl -s https://api.github.com/repos/docker/docker-ce/releases/latest | grep tag_name | cut -d '\"' -f 4 | cut -d 'v' -f 2)\" ]; then\n    echo \"\ud83d\udfe5 Docker version is not up to date.\"\nfi\n\n\n"
-    },
-    {
-      "id": 2,
-      "name": "Tier 2 - Ansible command",
-      "description": "Ansible ping command.",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "\n\n#!/bin/bash\n\n# This script requires that Ansible is installed on the same server as the Automation Action runner.\n# Before using this script, check if your alert payload includes a hostname and change the pd.alert variable as required.\n\n\necho -e \"This an example of an ansible command line script.\"\necho -e \"It connects to the server name included the alert payload.\"\n\nansible ${pd.alert.details.hostname} -i ansible/hosts -m ping\n\n\n"
-    },
-    {
-      "id": 3,
-      "name": "Tier 2 - PagerDuty API - Add alert description to an incident note",
-      "description": "This requires a PagerDuty API key and a valid email address.",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "\n\n#!/bin/bash\n\n# read PagerDuty API key from a file called pagerdutyAPItoken which is in a directory called credentials below the runner directory\n# the file only contains the API key\n# you need to create this on your runner or do something similar\ntoken=$(cat credentials/pagerdutyAPItoken)\n\n# The email address of a valid user associated with the account making the request.\nemailAddress=\"cfischer@pagerduty.com\"\n\ncurl --location --request POST \"https://api.pagerduty.com/incidents/${pd.incident.id}/notes\" --header \"Authorization: Token token=$token\" --header \"Accept: application/vnd.pagerduty+json;version=2\" --header \"Content-Type: application/json\" --header \"From: $emailAddress\" --header \"Content-Type: application/json\" --data-raw \"{\n    \"note\": {\n        \"content\": \"Alert received: ${pd.alert.description}\"\n    }\n}\"\n\n\n\n"
-    },
-    {
-      "id": 4,
-      "name": "Diagnostics - Check Environment 4 ",
-      "description": "This is my description ",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "ls -al"
-    },
-    {
-      "id": 5,
-      "name": "Diagnostics - Check Environment 5 ",
-      "description": "This is my description",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "ls -al"
-    },
-    {
-      "id": 6,
-      "name": "Diagnostics - Check Environment 6",
-      "description": "This is my description",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "ls -al"
-    },
-    {
-      "id": 7,
-      "name": "Diagnostics - Check Environment 7",
-      "description": "This is my description",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "ls -al"
-    },
-    {
-      "id": 8,
-      "name": "Diagnostics - Check Environment 8",
-      "description": "This is my description",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "ls -al"
-    },
-    {
-      "id": 9,
-      "name": "Diagnostics - Check Environment 9",
-      "description": "This is my description",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "ls -al"
-    },
-    {
-      "id": 10,
-      "name": "Diagnostics - Check Environment 10 ",
-      "description": "This is my description",
-      "classification": "Diagnostics",
-      "type": "runner",
-      "script": "ls -al"
-    }
-  ]
+        
+        {
+            "classification": "diagnostic",
+             "script": "#!/bin/bash\n\n# Check if Node.js is installed\nif ! command -v node &> /dev/null\nthen\n    echo \" 🟥 Node.js is not installed\"\n    exit\nfi\n\n# Get the PID of the Node.js process\npid=$(pgrep node)\n\nif [ -z \"$pid\" ]\nthen\n    echo \"🟥 No Node.js process running\"\n    exit\nfi\n\n# Check the memory usage of the Node.js process\nmem=$(ps -p $pid -o rss=)\n\n# Check the CPU usage of the Node.js process\ncpu=$(ps -p $pid -o %cpu=)\n\n\n# Get the Node.js version\nNODE_VERSION=$(node -v)\n\n# Get the npm version\nNPM_VERSION=$(npm -v)\n\n\necho \"Node.js process is running with PID $pid\"\necho \"Node.js version:\\t\\t $NODE_VERSION\"\necho \"npm version:\\t\\t $NPM_VERSION\"\necho \"Memory usage:\\t\\t $mem KB\"\necho \"CPU usage:\\t\\t $cpu%\"\n#!/bin/bash\n\n# Get the latest version of Node.js from the official website\nLATEST_VERSION=$(curl -sL https://nodejs.org/en/download/ | grep -oP 'Latest LTS Version: \\K\\d+\\.\\d+\\.\\d+')\n\n# Get the currently installed version of Node.js\nINSTALLED_VERSION=$(node -v | grep -oP 'v\\d+\\.\\d+\\.\\d+')\n\n# Compare the versions and print a message\nif [ \"$LATEST_VERSION\" = \"$INSTALLED_VERSION\" ]; then\n  echo \"You have the latest version of Node.js installed.\"\nelse\n  echo \"🟥 You do not have the latest version of Node.js installed. Latest version is $LATEST_VERSION, and you have $INSTALLED_VERSION.\"\nfi\n\n",
+            "description": "Provides information about the version and  health of Node.js.",
+            "id": "101",
+            "name": "Tier 1 - Diagnostics -  Node.js Health",
+          "type": "runner"
+                },
+        {
+            "classification": "diagnostic",
+            "script": "#!/bin/bash\n#Requires Docker to be installed on the server where for the Automation Action runner is running.\n\n# Check if Docker is installed\nif ! command -v docker >/dev/null 2>&1; then\n  echo \"🟥 Docker is not installed!\"\n  exit 1\nfi\n\n\n# Check if Docker daemon is running\nif ! systemctl is-active docker &> /dev/null; then\n    echo \"🟥 ERROR: Docker daemon is not running.\"\n    exit 1\nfi\n\n\n# Get the Docker version\nDOCKER_VERSION=$(docker --version)\n\n# Get the Docker containers count\nDOCKER_CONTAINERS_COUNT=$(docker ps -q | wc -l)\n\n# Get the Docker images count\nDOCKER_IMAGES_COUNT=$(docker images -q | wc -l)\n\n# Get the Docker volumes count\nDOCKER_VOLUMES_COUNT=$(docker volume ls -q | wc -l)\n\n# Get the Docker networks count\nDOCKER_NETWORKS_COUNT=$(docker network ls -q | wc -l)\n\n# Print the health information\necho -e \"------Docker Health Information-----\"\necho -e \"Docker version:\\t\\t $DOCKER_VERSION\"\necho -e \"Docker containers count: $DOCKER_CONTAINERS_COUNT\"\necho -e \"Docker images count:\\t $DOCKER_IMAGES_COUNT\"\necho -e \"Docker volumes count:\\t $DOCKER_VOLUMES_COUNT\"\necho -e \"Docker networks count:\\t $DOCKER_NETWORKS_COUNT\"\n\n# Check if Docker version is up to date\nDOCKER_VERSION=$(docker version --format '{{.Server.Version}}')\nif [ \"${DOCKER_VERSION}\" != \"$(curl -s https://api.github.com/repos/docker/docker-ce/releases/latest | grep tag_name | cut -d '\"' -f 4 | cut -d 'v' -f 2)\" ]; then\n    echo \"🟥 Docker version is not up to date.\"\nfi\n",
+            "description": "Provides health information about Docker.",
+            "id": "102",
+             "name": "Tier 1 - Diagnostics - Docker Health",
+           "type": "runner"
+        },
+    
+        {
+            "classification": "diagnostic",
+             "script": "#!/bin/bash\n\necho -e \"-----System Information-----\"\necho -e \"Hostname:\\t\\t\"`hostname`\necho -e \"uptime:\\t\\t\\t\"`uptime | awk '{print $3,$4}' | sed 's/,//'`\necho -e \"Manufacturer:\\t\\t\"`cat /sys/class/dmi/id/chassis_vendor`\necho -e \"Product Name:\\t\\t\"`cat /sys/class/dmi/id/product_name`\necho -e \"Version:\\t\\t\"`cat /sys/class/dmi/id/product_version`\necho -e \"Machine Type:\\t\\t\"`vserver=$(lscpu | grep Hypervisor | wc -l); if [ $vserver -gt 0 ]; then echo \"VM\"; else echo \"Physical\"; fi`\necho -e \"Operating System:\\t\"`hostnamectl | grep \"Operating System\" | cut -d ' ' -f5-`\necho -e \"Kernel:\\t\\t\\t\"`uname -r`\necho -e \"Architecture:\\t\\t\"`arch`\necho -e \"Processor Name:\\t\\t\"`awk -F':' '/^model name/ {print $2}' /proc/cpuinfo | uniq | sed -e 's/^[ \\t]*//'`\necho -e \"Active User:\\t\\t\"`w | cut -d ' ' -f1 | grep -v USER | xargs -n1`\necho -e \"System Main IP:\\t\\t\"`hostname -I`\necho \"\"\necho -e \"------CPU/Memory Usage-------\"\necho -e \"Memory Usage:\\t\"`free | awk '/Mem/{printf(\"%.2f%\"), $3/$2*100}'`\necho -e \"CPU Usage:\\t\"`cat /proc/stat | awk '/cpu/{printf(\"%.2f%\\x0A\"), ($2+$4)*100/($2+$4+$5)}' |  awk '{print $0}' | head -1`\necho \"\"\necho -e \"-------Disk Usage >80%-------\"\ndf -Ph | sed s/%//g | awk '{ if($5 > 80) print $0;}'\necho \"\"\n\necho -e \"-------For WWN Details--------\"\nvserver=$(lscpu | grep Hypervisor | wc -l)\nif [ $vserver -gt 0 ]\nthen\necho \"$(hostname) is a VM\"\nelse\ncat /sys/class/fc_host/host?/port_name\nfi\necho \"\"\necho \"\"\necho -e \"------Checking web sites------\"\ncheck_server(){\nif curl -I $1 2>&1 | grep -w \"200\\|301\" ; then\n    echo $1 \"is up 🟩\"\nelse\n    echo $1 \"is down 🟥\"\nfi\n}\ncheck_server \"https://www.pagerduty.com\"\ncheck_server \"https://www.providerbeta.com\"",
+            "action_type": "script",
+            "description": "Provides technical information about the server where the Automation Action runner is running.",
+            "id": "103",
+            "name": "Tier 1 - Diagnostics - System Config",
+           "type": "runner"
+        },
+        {
+            "classification": "diagnostic",
+             "script": "#!/bin/bash\n\n# Check CPU usage\ncpu_usage=$(top -bn1 | grep \"Cpu(s)\" | sed \"s/.*, *\\([0-9.]*\\)%* id.*/\\1/\" | awk '{print 100 - int($1)}')\nif [[ $cpu_usage -gt 80 ]]; then\n    echo \"🟥 WARNING: CPU usage is high. Current usage is ${cpu_usage}%.\"\nelse\n    echo \"🟩 CPU usage is normal. Current usage is ${cpu_usage}%.\"\nfi\n\n# Check memory usage\nmem_usage=$(free | awk '/Mem/{printf(\"%.0f\"), $3/$2*100}')\nif [[ $mem_usage -gt 80 ]]; then\n    echo \"🟥 WARNING: Memory usage is high. Current usage is ${mem_usage}%.\"\nelse\n    echo \"🟩 Memory usage is normal. Current usage is ${mem_usage}%.\"\nfi\n\n# Check disk usage\ndisk_usage=$(df -h / | awk '/\//{print $(NF-1)}')\nif [[ $(echo \"${disk_usage}\" | sed 's/%//g') -gt 40 ]]; then\n    echo \"🟥 WARNING: Disk usage is high. Current usage is ${disk_usage}.\"\nelse\n    echo \"🟩 Disk usage is normal. Current usage is ${disk_usage}.\"\nfi\n\n# Check network connectivity\nping -q -c5 google.com > /dev/null\nif [ $? -eq 0 ]; then\n    echo \"🟩 Network connectivity is normal.\"\nelse\n    echo \"🟥 WARNING: Unable to reach google.com. Network connectivity may be down.\"\nfi",
+            "description": "Provides health information about the server where the Automation Action runner is running.",
+            "id": "104",
+            "name": "Tier 1 - Diagnostics - System Health Check.",
+          "type": "runner"
+        },
+        {
+             "classification": "diagnostic",
+              "script": "#!/usr/bin/env python3\n\n# This program requires that Python is installed on the server where the \n# Automation Runner has been installed as well as the modules below\n\nimport os\nimport psutil\nimport subprocess\nfrom datetime import timedelta\n\n# System uptime\nwith open('/proc/uptime', 'r') as f:\n    uptime_seconds = float(f.readline().split()[0])\n    uptime_string = str(timedelta(seconds=uptime_seconds))\n\n# CPU usage\ncpu_usage = psutil.cpu_percent(interval=1)\n\n# Memory usage\nmem = psutil.virtual_memory()\nmem_usage = 100 - (mem.available * 100 / mem.total)\n\n# Disk usage\ndisk = psutil.disk_usage('/')\ndisk_usage = 100 - (disk.free * 100 / disk.total)\n\n# System load average\nload_avg = os.getloadavg()[0]\n\n# Check system processes\nprocesses = subprocess.check_output(['ps', '-eo', 'pid,%cpu,%mem,cmd']).decode().split('\\n')[1:-1]\n\n# Display results\nprint(f\"System uptime:\\t\\t {uptime_string}\")\nprint(f\"CPU usage:\\t\\t {cpu_usage}%\")\nprint(f\"Memory usage:\\t\\t {mem_usage}%\")\nprint(f\"System load average:\\t {load_avg}\")\nprint(f\"Disk usage:\\t\\t {disk_usage}%\")\n\n#print(\"\\nProcesses:\")\n#for process in processes:\n  #   print(process)\n\ndisk_io_counters = psutil.disk_io_counters()\n\n# Check read and write speeds\ndisk_read_speed = disk_io_counters.read_bytes / disk_io_counters.read_time\ndisk_write_speed = disk_io_counters.write_bytes / disk_io_counters.write_time\n\nprint(\"Disk Read Speed:\\t {:.2f} MB/s\".format(disk_read_speed / 1024 / 1024))\nprint(\"Disk Write Speed:\\t {:.2f} MB/s\".format(disk_write_speed / 1024 / 1024))",
+            "description": "Python program that checks the health of the system where the Automation Action runner is running.",
+            "id": "105",
+            "name": "Tier 1 - Python -  System Health Check",
+          "type": "runner"
+          },
+        {
+            "classification": "diagnostic",
+            "script": "#!/bin/bash\n# Your payload alert might differ and return different value. \n# Run the Automation Action at least once and check the values in the context of the action\n\n\necho -e \"----Alert details----\"\necho -e \"Description:\\t\"${pd.alert.description}\necho -e \"Source Origin:\\t\"${pd.alert.source_origin}\necho -e \"Group:\\t\\t\"${pd.alert.service_group}\necho -e \"Compoment:\\t\"${pd.alert.source_component}\necho -e \"Severity:\\t\"${pd.alert.severity}\necho -e \"Hostname:\\t\"${pd.alert.details.hostname}\necho -e \"Timestamp:\\t\"${pd.alert.timestamp}\necho -e \"Dedup-key:\\t\"${pd.alert.dedup_key}\n\n\necho -e \"----Incident details----\" \necho -e \"Incident ID:\\t\"${pd.incident.id}\necho -e \"User ID:\\t\"${pd.user.id}",
+            "description": "Can for used to view details about the alert associated to the incident from Microsoft Teams or Slack for instance.",
+            "id": "106",
+            "name": "Tier 1 - Troubleshooting - Displays Alert Payload",
+          "type": "runner"
+            },
+        {
+            "classification": "diagnostic",
+             "script": "#!/bin/bash\n\necho \"The Automation Action runner has been installed in directory $PWD on $(hostname).\"\necho \"It has been started by $(id -un).\"",
+            "description": "Basic information about the context in which the runner is running.",
+            "id": "107",
+            "name": "Tier 1 - Troubleshooting - Runner Basic Information",
+          "type": "runner"
+        },
+        {
+            "classification": "remediation",
+            "script": "#!/bin/bash\n\n# This script requires that Ansible is installed on the same server as the Automation Action runner.\n# Before using this script, check if your alert payload includes a hostname and change the pd.alert variable as required.\n\nansible-playbook -i ansible/hosts -l ${pd.alert.details.hostname} ansible/server_resource.yml ",
+            "description": "Example of Ansible playbook. It assumes there is a directory called ansible containing the playbook in the Automation Action runner directory.",
+            "id": "201",
+            "name": "Tier 2 - Ansible - Playbook",
+          "type": "runner"
+           },
+        {
+             
+            "classification": "diagnostic",
+            "script": "#!/bin/bash\n\n# This script requires that Ansible is installed on the same server as the Automation Action runner.\n# Before using this script, check if your alert payload includes a hostname and change the pd.alert variable as required.\n\n\necho -e \"This an example of an ansible command line script.\"\necho -e \"It connects to the server name coming from the alert payload.\"\n\nansible ${pd.alert.details.hostname} -i ansible/hosts -m ping",
+            "description": "Ansible ping command.",
+            "id": "202",
+            "name": "Tier 2 - Ansible - Simple Command",
+          "type": "runner"
+        },
+        {
+            "classification": "diagnostic",
+            "script": "#!/bin/bash\n\n# This script requires that the AWS CLI is installed on the same server as the Automation Action runner.\n# Before using this script, check if your alert payload includes an AWS instance ID and change the pd.alert variable as required.\n\naws-okta exec sandbox --  aws ec2 describe-instance-status --instance-ids ${pd.alert.details.AWSinstanceID} --region us-east-1\n\n\n",
+            "description": "Provides health information about the EC2 instance linked to this incident.",
+            "id": "203",
+            "name": "Tier 2 - Diagnostics - AWS EC2 Instance Health Check",
+          "type": "runner"
+        },
+        {
+            "classification": "diagnostic",
+            "script": "#!/bin/bash\n\n# Define the name of the Docker container to check\nCONTAINER_NAME=${pd.alert.details.container} \n\n# Get the ID of the Docker container\nCONTAINER_ID=$(docker ps -qf \"name=$CONTAINER_NAME\")\n\n# Check if the Docker container is running\nif [ -z \"${CONTAINER_ID}\" ]; then\n  echo \"🟥 ERROR: Container '${CONTAINER_NAME}' is not running.\"\n  exit 1\nfi\n\n# Get the health status of the Docker container\nHEALTH=$(docker inspect --format='{{.State.Health.Status}}' ${CONTAINER_ID})\n\n# Check the health status and exit with the appropriate code\nif [ \"${HEALTH}\" == \"healthy\" ]; then\n  echo \"🟩 SUCCESS: Container '${CONTAINER_NAME}' is healthy.\"\n  exit 0\nelse\n  echo \"🟥 ERROR: Container '${CONTAINER_NAME}' is not healthy.\"\n  exit 1\nfi\n",
+            "description": "Provides health information about a specific Docker container.",
+            "id": "204",
+            "name": "Tier 2 - Diagnostics - Docker Container Health Check",
+          "type": "runner"
+        },
+        {
+            "classification": "diagnostic",
+            "script": "#!/bin/bash\n# This script checks the status of the Kubernetes API server and nodes\n\n# Check the API server status\nAPI_STATUS=$(kubectl get componentstatus | grep -E '^etcd-|^controller-manager|^scheduler' | awk '{print $2}' | grep -v 'Healthy')\nif [ -n \"$API_STATUS\" ]; then\n  echo \"🟥 API server is not running or not healthy: $API_STATUS\"\n  exit 1\nfi\n\n# Check the node status\nNODE_STATUS=$(kubectl get nodes | awk '{print $2}' | grep -v 'STATUS' | grep -v 'Ready')\nif [ -n \"$NODE_STATUS\" ]; then\n  echo \"🟥 Some nodes are not ready: $NODE_STATUS\"\n  exit 1\nfi\n\necho \"🟩 API server and nodes are healthy\"\nexit 0\n",
+            "description": "Provides health information about Kubernetes.",
+            "id": "205",
+            "name": "Tier 2 - Diagnostics - Kubernetes Health Check",
+          "type": "runner"
+        },
+        {
+            "classification": "diagnostic",
+            "script": "#!/bin/bash\n# Before using this script, check if your alert payload includes a hostname and change the pd.alert variable as required.\n\n\n# Check network connectivity\nping -q -c5 ${pd.alert.details.hostname} > /dev/null\nif [ $? -eq 0 ]; then\n    echo \"🟩 Network connectivity to ${pd.alert.details.hostname} is normal.\"\nelse\n    echo \"🟥 WARNING: Unable to reach ${pd.alert.details.hostname}. Network connectivity may be down.\"\nfi",
+            "description": "Checks the network connectivity between the Automation Action runner host  and the hostname originated from the alert.",
+            "id": "206",
+            "name": "Tier 2 - Diagnostics - Network Connectivity Check",
+          "type": "runner"
+        },
+        {
+            "classification": "diagnostic",
+            "script": "#!/bin/bash\n\n# The Curl command reads the PagerDuty API key from a file called pagerdutyAPItoken which is in a directory called credentials below the runner directory\n# This file only contains the API key\n\n#Extracts your PagerDuty API key from the pagerdutyAPItoken file\ntoken=$(cat credentials/pagerdutyAPItoken)\n\n# The email address of a valid user associated with the account making the request.\nemailAddress=\"cfischer@pagerduty.com\"\n\ncurl --location --request POST \"https://api.pagerduty.com/incidents/${pd.incident.id}/notes\" \\\n--header \"Authorization: Token token=$token\" \\\n--header \"Accept: application/vnd.pagerduty+json;version=2\" \\\n--header \"Content-Type: application/json\" \\\n--header \"From: $emailAddress\" \\\n--header \"Content-Type: application/json\" \\\n--data-raw '{\n    \"note\": {\n        \"content\": \"Alert received: ${pd.alert.description}\"\n    }\n}'",
+            "description": "This requires a PagerDuty API key and a valid email address. ",
+            "id": "207",
+            "name": "Tier 2 - PagerDuty API - Add Alert Description to  Incident Note",
+          "type": "runner"
+        },
+        {
+            "classification": "remediation",
+            "script": "#!/bin/bash\n\n# The Curl command reads the PagerDuty API key from a file called pagerdutyAPItoken which is in a directory called credentials below the runner directory\n# This file only contains the API key\n\n\n#recipient email address\nrecipient=\"cfischer@pagerduty.com\"\n\n\n#Extracts your PagerDuty API key from the pagerdutyAPItoken file\ntoken=$(cat credentials/pagerdutyAPItoken)\n\n\n# Make a curl request and store the response in a variable\nresponse=$(curl --location \"https://api.pagerduty.com/incidents/${pd.incident.id}\" \\\n--header \"Authorization: Token token=$token\" \\\n--header \"Accept: application/vnd.pagerduty+json;version=2\" \\\n--header \"Content-Type: application/json\")\n\n# Use jq to parse the JSON response and store it in a variable\ntitle=$(echo $response | jq '.incident.title')\ndescription=$(echo $response | jq '.incident.description')\n\n# Send email\necho \"$description\" | mail -s \"$title\" \"$recipient\"\necho\necho \"🟩 Email sent to $recipient.\"\n\n",
+            "description": "Sends an email with details about the incident to a third-party email address.",
+            "id": "208",
+            "name": "Tier 2 - PagerDuty API - Sends Incident Details via Email.",
+          "type": "runner"
+        },
+        {
+            "classification": "remediation",
+             "script": "#!/bin/bash\n\n# This Automation Action assumes there is a directory called script containing your scripts. \n# This directory needs to be in the Automation Action runner directory.\n\nssh ${pd.alert.details.hostname} -i credentials/ConstantFischer.pem \"bash -s\" < scripts/restart-service.sh ${pd.alert.source_component}",
+             "description": "Example of a generic script that will be executed from the runner. ",
+            "id": "301",
+            "name": "Tier 3 - Framework - Restart Service",
+        "type": "runner"
+        }
+        
+            ]
