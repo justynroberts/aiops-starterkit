@@ -81,16 +81,23 @@ Thats it. Simple. Default port is 5001
 
 Category
 
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-10.
+Diagnostics - Node.js Health
+Diagnostics - Docker Health
+Diagnostics - System Config
+Diagnostics - System Health Check.
+Python script - System Health Chec
+Troubleshooting - Displays Alert Payloa
+Troubleshooting - Runner Basic Information
+Ansible - Playbook
+Ansible - Simple Command
+Diagnostics - AWS EC2 Instance Health Check
+Diagnostics - Docker Container Health Check
+Diagnostics - Kubernetes Health Check
+Diagnostics - Network Connectivity Check
+PagerDuty API - Add Alert Description to Incident Note
+PagerDuty API - Sends Incident Details via Email.
+Framework - Restart Service
+
 
 
 ### Future Plans.
