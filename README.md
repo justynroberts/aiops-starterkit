@@ -85,8 +85,8 @@ Category
 - Diagnostics - Docker Health
 - Diagnostics - System Config
 - Diagnostics - System Health Check.
-- Python script - System Health Chec
-- Troubleshooting - Displays Alert Payloa
+- Python script - System Health Check
+- Troubleshooting - Displays Alert Payload
 - Troubleshooting - Runner Basic Information
 - Ansible - Playbook
 - Ansible - Simple Command
