@@ -1,0 +1,31 @@
+---
+- name: Check server resources
+  hosts: server
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Check CPU usage
+      shell: "top -bn1 | grep 'Cpu(s)' | awk '{print $2 + $4}'"
+      register: cpu_usage
+
+    - name: Check memory usage
+      shell: "free | awk '/Mem/{printf(\"%.2f%%\", $3/$2*100.0)}'"
+      register: mem_usage
+
+    - name: Check disk usage
+      shell: "df -h / | awk '{print $5}' | tail -n 1"
+      register: disk_usage
+
+    - name: Check uptime
+      shell: "uptime"
+      register: server_uptime
+
+    - name: Display results
+      debug:
+        msg: 
+        - "CPU usage: {{ cpu_usage.stdout }}%"
+        - "Memory usage: {{ mem_usage.stdout }}"
+        - "Disk usage: {{ disk_usage.stdout }}"
+        - "Server uptime: {{ server_uptime.stdout }}"
+
